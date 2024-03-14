@@ -1,41 +1,42 @@
-import React, { createContext, useMemo, useState, useContext } from "react";
+import React, { createContext, useMemo, useState, useContext, ReactNode } from "react";
 import noop from "lodash/noop";
 
 type MenuIds = "first" | "second" | "last";
 type Menu = { id: MenuIds; title: string };
 
-// Додати тип Menu Selected
+type SelectedMenu = { id?: MenuIds };
+
+type MenuSelected = {
+  selectedMenu: SelectedMenu;
+};
+
+type MenuAction = {
+  onSelectedMenu: (menu: SelectedMenu) => void;
+};
+
+type PropsProvider = {
+  children: ReactNode; 
+};
 
 const MenuSelectedContext = createContext<MenuSelected>({
   selectedMenu: {},
 });
 
-// Додайте тип MenuAction
-
 const MenuActionContext = createContext<MenuAction>({
-  onSelectedMenu: noop,
+  onSelectedMenu: noop, 
 });
 
-type PropsProvider = {
-  children; // Додати тип для children
-};
-
 function MenuProvider({ children }: PropsProvider) {
-  // Додати тип для SelectedMenu він повинен містити { id }
   const [selectedMenu, setSelectedMenu] = useState<SelectedMenu>({});
 
-  const menuContextAction = useMemo(
-    () => ({
+  const menuContextAction = useMemo(() => ({
       onSelectedMenu: setSelectedMenu,
-    }),
-    []
+    }), []
   );
 
-  const menuContextSelected = useMemo(
-    () => ({
+  const menuContextSelected = useMemo(() => ({
       selectedMenu,
-    }),
-    [selectedMenu]
+    }), [selectedMenu]
   );
 
   return (
@@ -48,7 +49,7 @@ function MenuProvider({ children }: PropsProvider) {
 }
 
 type PropsMenu = {
-  menus; // Додайте вірний тип для меню
+  menus: Menu[]; 
 };
 
 function MenuComponent({ menus }: PropsMenu) {
@@ -69,18 +70,9 @@ function MenuComponent({ menus }: PropsMenu) {
 
 export function ComponentApp() {
   const menus: Menu[] = [
-    {
-      id: "first",
-      title: "first",
-    },
-    {
-      id: "second",
-      title: "second",
-    },
-    {
-      id: "last",
-      title: "last",
-    },
+    { id: "first", title: "First" },
+    { id: "second", title: "Second" },
+    { id: "last", title: "Last" },
   ];
 
   return (
